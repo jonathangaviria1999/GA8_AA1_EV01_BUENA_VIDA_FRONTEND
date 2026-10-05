@@ -1,7 +1,15 @@
 // Servicio encargado de comunicarse con la API backend BuenaVidaAPI.
-// Centraliza las peticiones HTTP del módulo de gestión de gastos.
+// Centraliza las peticiones HTTP del modulo de gestion de gastos.
 
 const API_URL = 'https://ga8-aa1-ev01-buena-vida-backend.onrender.com/api/gastos'
+
+// Convierte el _id de MongoDB en id para que el frontend lo pueda usar.
+function normalizarGasto(gasto) {
+    return {
+        ...gasto,
+        id: gasto.id || gasto._id
+    }
+}
 
 // Consulta todos los gastos registrados.
 export async function obtenerGastos() {
@@ -11,7 +19,10 @@ export async function obtenerGastos() {
         throw new Error('Error al consultar los gastos')
     }
 
-    return await respuesta.json()
+    const data = await respuesta.json()
+    const listaGastos = Array.isArray(data) ? data : data.gastos || []
+
+    return listaGastos.map(normalizarGasto)
 }
 
 // Registra un nuevo gasto.
@@ -28,7 +39,10 @@ export async function crearGasto(gasto) {
         throw new Error('Error al registrar el gasto')
     }
 
-    return await respuesta.json()
+    const data = await respuesta.json()
+    const gastoCreado = data.gasto || data
+
+    return normalizarGasto(gastoCreado)
 }
 
 // Actualiza un gasto existente.
@@ -45,7 +59,10 @@ export async function actualizarGasto(id, gasto) {
         throw new Error('Error al actualizar el gasto')
     }
 
-    return await respuesta.json()
+    const data = await respuesta.json()
+    const gastoActualizado = data.gasto || data
+
+    return normalizarGasto(gastoActualizado)
 }
 
 // Elimina un gasto por su identificador.
@@ -57,4 +74,6 @@ export async function eliminarGasto(id) {
     if (!respuesta.ok) {
         throw new Error('Error al eliminar el gasto')
     }
+
+    return true
 }
