@@ -1,0 +1,3 @@
+Repositorio del componente front-end del proyecto Buena Vida:
+
+https://github.com/jonathangaviria1999/BuenaVidaFrontend
